@@ -21,13 +21,12 @@ def main():
     if response.status_code == 200:
         data = response.json()
         emp_name = data["name"]
-        username = data["username"]
         todos_response = requests.get(
             f"https://jsonplaceholder.typicode.com/todos/?userId={employee_id}"
         )
         if todos_response.status_code == 200:
             todos = todos_response.json()
-            comp_tasks = [todo["title"] for todo in todos if todo.get("completed")]
+
             filename = f"{employee_id}.csv"
             # Open the csv file in write mode
             with open(filename, "w", newline="") as file:
