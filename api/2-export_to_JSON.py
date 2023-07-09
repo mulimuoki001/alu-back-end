@@ -1,29 +1,31 @@
 #!/usr/bin/python3
-"""Module"""
+"""python script that exports data in the JSON format"""
+
+import json
+import requests
+from sys import argv
 
 if __name__ == "__main__":
-    import json
-    import requests
-    import sys
+    request_employee = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}/".format(argv[1])
+    )
 
-    userId = sys.argv[1]
-    user = requests.get("https://jsonplaceholder.typicode.com/users/{userId}")
-    todos = requests.get("https://jsonplaceholder.typicode.com/todos")
-    todos = todos.json()
+    user = json.loads(request_employee.text)
+    username = user.get("username")
+    request_todos = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}/todos".format(argv[1])
+    )
 
-    todoUser = {}
-    taskList = []
+    tasks = {}
+    user_todos = json.loads(request_todos.text)
 
-    for task in todos:
-        if task.get("userId") == int(userId):
-            taskDict = {
-                "task": task.get("title"),
-                "completed": task.get("completed"),
-                "username": user.json().get("username"),
-            }
-            taskList.append(taskDict)
-    todoUser[userId] = taskList
+    for dictionary in user_todos:
+        tasks.update({dictionary.get("title"): dictionary.get("completed")})
 
-    filename = userId + ".json"
-    with open(filename, mode="w") as f:
-        json.dump(todoUser, f)
+    task_list = []
+    for k, v in tasks.items():
+        task_list.append({"task": k, "completed": v, "username": username})
+
+    json_to_dump = {argv[1]: task_list}
+    with open("{}.json".format(argv[1]), mode="w") as file:
+        json.dump(json_to_dump, file)

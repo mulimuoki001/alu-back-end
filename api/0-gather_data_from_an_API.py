@@ -1,28 +1,30 @@
 #!/usr/bin/python3
-"""Module"""
+""" Library to gather data from an API """
 
 import requests
 import sys
 
+""" Function to gather data from an API """
+
 if __name__ == "__main__":
     employee_id = sys.argv[1]
-    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
-    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/".format(
-        employee_id
-    )
+    url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
 
-    user_info = requests.get(user_url).json()
-    todos_info = requests.get(todos_url).json()
+    todo = "https://jsonplaceholder.typicode.com/todos?userId={}"
+    todo = todo.format(employee_id)
 
-    employee_name = user_info["name"]
-    tsk = list(filter(lambda obj: (obj["completed"] is True), todos_info))
-    number_of_done_tasks = len(tsk)
-    total_number_of_tasks = len(todos_info)
+    user_info = requests.request("GET", url).json()
+    todo_info = requests.request("GET", todo).json()
+
+    employee_name = user_info.get("name")
+    total_tasks = list(filter(lambda x: (x["completed"] is True), todo_info))
+    task_com = len(total_tasks)
+    total_task_done = len(todo_info)
 
     print(
         "Employee {} is done with tasks({}/{}):".format(
-            employee_name, number_of_done_tasks, total_number_of_tasks
+            employee_name, task_com, total_task_done
         )
     )
 
-    [print("\t " + task["title"]) for task in tsk]
+    [print("\t {}".format(task.get("title"))) for task in total_tasks]
