@@ -43,10 +43,12 @@ if emp_response.status_code == 200:
         else:
             print(f"Error: Failed for employee {employee_id}")
         # Export the data to a JSON file
-    filename = "todo_all_employees.json"
-    with open(filename, "w") as file:
-        json.dump(all_employees_tasks, file)
-
-    print(f"Data exported to {filename} successfully.")
 else:
-    print("Error: Failed for employee employee data")
+    print(f"Error: Failed to retrieve employee data")
+
+# Export the data to a JSON file
+filename = "todo_all_employees.json"
+with open(filename, "w") as file:
+    json.dump(all_employees_tasks, file)
+
+print(f"Data exported to {filename} successfully.")
