@@ -1,28 +1,32 @@
 #!/usr/bin/python3
-"""Module"""
+"""python script that exports data in the CSV format"""
 
+import csv
+import json
 import requests
-import sys
+from sys import argv
+
 
 if __name__ == "__main__":
-    employee_id = sys.argv[1]
-    user_url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
-    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/".format(
-        employee_id
+    """request user info by employee ID"""
+    request_employee = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}/".format(argv[1])
     )
 
-    user_info = requests.get(user_url).json()
-    todos_info = requests.get(todos_url).json()
+    user = json.loads(request_employee.text)
+    username = user.get("username")
 
-    employee_name = user_info["name"]
-    task_completed = list(filter(lambda obj: (obj["completed"] is True), todos_info))
-    number_of_done_tasks = len(task_completed)
-    total_number_of_tasks = len(todos_info)
-
-    print(
-        "Employee {} is done with tasks({}/{}):".format(
-            employee_name, number_of_done_tasks, total_number_of_tasks
-        )
+    request_todos = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}/todos".format(argv[1])
     )
 
-    [print("\t " + task["title"]) for task in task_completed]
+    tasks = {}
+    user_todos = json.loads(request_todos.text)
+
+    for dictionary in user_todos:
+        tasks.update({dictionary.get("title"): dictionary.get("completed")})
+
+    with open("{}.csv".format(argv[1]), mode="w") as file:
+        file_editor = csv.writer(file, delimiter=",", quoting=csv.QUOTE_ALL)
+        for k, v in tasks.items():
+            file_editor.writerow([argv[1], username, v, k])
