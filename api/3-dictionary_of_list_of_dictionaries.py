@@ -7,7 +7,7 @@ import requests
 
 def get_employee_task(employee_id):
     """Doc"""
-    user_url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
+    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
 
     user_info = requests.request("GET", user_url).json()
 
